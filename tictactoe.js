@@ -15,33 +15,27 @@ function gameBoard() {
 }
 
 // Logic to play 9 round, and update value in each round
-function playRound(board) {
-    let i = 1;
-    
-    while (i < 10) {
-
-    const input = prompt("input the position");
-    const [row, col] = input.split(",").map(Number);
-    const r = row;
-    const c = col;
-    const symbol = i % 2 === 0 ? 'x' : 'o';
-    const indicator = updateCellValue(board, r, c, symbol);
-    if (!indicator)
-        continue;
-    console.table(board);
+function nextMove(currentTurn,board,r,c) {
+    const symbol = currentTurn % 2 === 0 ? 'X' : 'O';
+    const validMove = updateCellValue(board, r, c, symbol);
+    if (!validMove) return false;
     const result = checkWinner(board);
     if (result !== '') {
         alert(`Player ${result} wins!`);
-        break;
-        };
-    i++;
+        return true;
     }
-}
+    if(currentTurn==9 && result==''){
+        alert(`Tie!`);
+        return true;
+    }
+            return true;
+    }
 
 // Check if the cell already had value, and if not, update it
 function updateCellValue(board, r, c, value){
     if (board[r][c] === "" || board[r][c] === null || board[r][c] === undefined) {
     board[r][c] = value;
+    console.table(board);
     return true;
   } else {
     console.error(`Cell at (${r}, ${c}) already has a value: ${board[r][c]}`);
@@ -85,9 +79,50 @@ function checkWinner(board) {
     return '';
 }
 
+function userInput (currentTurn, board) {
+    const squares = document.querySelectorAll(".square");
+    squares.forEach((square) => {
+    square.addEventListener("click", function() {
+    const squareNumber = square.id;
+    const r = Number(squareNumber.charAt(0));
+    const c = Number(squareNumber.charAt(1));
+    const currentBoard = board;
+    const advance = nextMove (currentTurn, currentBoard, r, c);
+    if (advance) {
+        const squareValue = document.createElement('p');
+        squareValue.className = 'square-value';
+        squareValue.textContent = currentBoard[r][c];
+        square.appendChild(squareValue);
+        currentTurn++;
+    }
+    });
+})}
+
+//Update square with x or or
+
+
+
 //Play
-const newBoard = gameBoard();
-playRound(newBoard);
+function play(){
+    //reset squares
+    const squares = document.querySelectorAll(".square");
+    squares.forEach((square) => {
+      square.innerHTML = "";
+    });
+
+    //create new board
+    const newBoard = gameBoard();    
+    let currentTurn = 1; 
+    userInput(currentTurn, newBoard);
+
+}
+
+document.getElementById("play").addEventListener("click", play);
+
+
+
+
+
 
 
 // // More logical way to check Winner by the winningCombos
