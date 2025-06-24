@@ -71,9 +71,28 @@ button {
   padding: 12px 24px;
   cursor: pointer;
   transition: all 0.2s ease;
+  margin-top: 50px;
 }
 
 button:active {
   transform: translateY(2px);
   box-shadow: 0 2px 0 #1B5E20;
+}
+
+.next-turn {
+    font-size: 25px;
+    font-weight: bold;
+    color: #222;
+    text-shadow:
+        1px 1px 0 #ccc,
+        2px 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.winner {
+    font-size: 25px;
+    font-weight: bold;
+    color: #a54b4b;
+    text-shadow:
+        1px 1px 0 #ccc,
+        2px 2px 4px rgba(0, 0, 0, 0.2);
 }

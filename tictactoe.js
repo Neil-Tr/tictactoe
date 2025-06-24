@@ -56,15 +56,16 @@ function checkWinner(board) {
 
 // Logic to update value, and check the winner 
 function nextMove(activePlayer,board,r,c) {
+    const text = document.querySelector(".winner");
     const validMove = updateCellValue(board, r, c, activePlayer);
     if (!validMove) return false;
     const result = checkWinner(board);
      if (result !== '' && result!== 'tie') {
-        alert(`Player ${result} wins!`);
+       text.textContent = `Player ${result} wins!`;
         return true;
      }
      if (result== 'tie') {
-        alert(`Tie!`);
+        text.textContent = `Tie!`
         return true;
      }
     return true;
@@ -82,6 +83,10 @@ function updateCellValue(board, r, c, value){
   }
 }
 function userInput (state) {
+    const nextTurnDisplay = document.querySelector(".next-turn");
+        if (nextTurnDisplay) {
+            nextTurnDisplay.textContent = `Next turn: ${state.activePlayer}`;
+        }
     const squares = document.querySelectorAll(".square");
     squares.forEach((square) => {
     square.addEventListener("click", function () {
@@ -95,6 +100,9 @@ function userInput (state) {
         squareValue.textContent = state.board[r][c];
         square.appendChild(squareValue);
         state.activePlayer = state.activePlayer === 'X' ? 'O' : 'X';
+    if (nextTurnDisplay) {
+        nextTurnDisplay.textContent = `Next turn: ${state.activePlayer}`;
+    }
     }
     });
 })}
@@ -113,10 +121,11 @@ function play(){
 }
 
 function resetBoardUI() {
-  const boardEl = document.querySelector(".gameboard");
-  const squares = document.querySelectorAll(".square");
-
-  squares.forEach((square) => {
+    const boardEl = document.querySelector(".gameboard");
+    const squares = document.querySelectorAll(".square");
+    const winner = document.querySelector(".winner");
+    winner.textContent = '';
+    squares.forEach((square) => {
     const newSquare = square.cloneNode(false); 
     newSquare.className = "square";
     newSquare.id = square.id;
