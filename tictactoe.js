@@ -14,43 +14,16 @@ function gameBoard() {
     return board;
 }
 
-// Logic to play 9 round, and update value in each round
-function nextMove(currentTurn,board,r,c) {
-    const symbol = currentTurn % 2 === 0 ? 'X' : 'O';
-    const validMove = updateCellValue(board, r, c, symbol);
-    if (!validMove) return false;
-    const result = checkWinner(board);
-    if (result !== '') {
-        alert(`Player ${result} wins!`);
-        return true;
-    }
-    if(currentTurn==9 && result==''){
-        alert(`Tie!`);
-        return true;
-    }
-            return true;
-    }
-
-// Check if the cell already had value, and if not, update it
-function updateCellValue(board, r, c, value){
-    if (board[r][c] === "" || board[r][c] === null || board[r][c] === undefined) {
-    board[r][c] = value;
-    console.table(board);
-    return true;
-  } else {
-    console.error(`Cell at (${r}, ${c}) already has a value: ${board[r][c]}`);
-    return false;
-  }
-}
 
 //Logic to check winner, to check it each turn after player play.
 function checkWinner(board) {
+
     if (board[0][0] !== '' && board[0][0] === board[0][1] && board[0][1] === board[0][2]) {
         return board[0][0];
     }
 
     if (board[1][0] !== '' && board[1][0] === board[1][1] && board[1][1] === board[1][2]) {
-        return board[1][0];
+       return board[1][0];
     }
 
     if (board[2][0] !== '' && board[2][0] === board[2][1] && board[2][1] === board[2][2]) {
@@ -76,45 +49,79 @@ function checkWinner(board) {
     if (board[0][2] !== '' && board[0][2] === board[1][1] && board[1][1] === board[2][0]) {
         return board[0][2];
     }
-    return '';
+    if ((board.every(row => row.every(cell => cell !== "" && cell != null))))
+        return 'tie';
+    else return '';
 }
 
-function userInput (currentTurn, board) {
+// Logic to update value, and check the winner 
+function nextMove(activePlayer,board,r,c) {
+    const validMove = updateCellValue(board, r, c, activePlayer);
+    if (!validMove) return false;
+    const result = checkWinner(board);
+     if (result !== '' && result!== 'tie') {
+        alert(`Player ${result} wins!`);
+        return true;
+     }
+     if (result== 'tie') {
+        alert(`Tie!`);
+        return true;
+     }
+    return true;
+    }
+
+// Check if the cell already had value, and if not, update it
+function updateCellValue(board, r, c, value){
+    if (board[r][c] === "" || board[r][c] === null || board[r][c] === undefined) {
+    board[r][c] = value;
+    console.table(board);
+    return true;
+  } else {
+    console.error(`Cell at (${r}, ${c}) already has a value: ${board[r][c]}`);
+    return false;
+  }
+}
+function userInput (state) {
     const squares = document.querySelectorAll(".square");
     squares.forEach((square) => {
-    square.addEventListener("click", function() {
+    square.addEventListener("click", function () {
     const squareNumber = square.id;
     const r = Number(squareNumber.charAt(0));
     const c = Number(squareNumber.charAt(1));
-    const currentBoard = board;
-    const advance = nextMove (currentTurn, currentBoard, r, c);
+    const advance = nextMove (state.activePlayer, state.board, r, c);
     if (advance) {
         const squareValue = document.createElement('p');
         squareValue.className = 'square-value';
-        squareValue.textContent = currentBoard[r][c];
+        squareValue.textContent = state.board[r][c];
         square.appendChild(squareValue);
-        currentTurn++;
+        state.activePlayer = state.activePlayer === 'X' ? 'O' : 'X';
     }
     });
 })}
 
-//Update square with x or or
-
-
 
 //Play
 function play(){
-    //reset squares
-    const squares = document.querySelectorAll(".square");
-    squares.forEach((square) => {
-      square.innerHTML = "";
-    });
-
     //create new board
-    const newBoard = gameBoard();    
-    let currentTurn = 1; 
-    userInput(currentTurn, newBoard);
+    resetBoardUI();
+    const gamestate = {
+        board: gameBoard(),
+        activePlayer: 'O'
+    }
+    userInput(gamestate);
 
+}
+
+function resetBoardUI() {
+  const boardEl = document.querySelector(".gameboard");
+  const squares = document.querySelectorAll(".square");
+
+  squares.forEach((square) => {
+    const newSquare = square.cloneNode(false); 
+    newSquare.className = "square";
+    newSquare.id = square.id;
+    boardEl.replaceChild(newSquare, square);
+  });
 }
 
 document.getElementById("play").addEventListener("click", play);
